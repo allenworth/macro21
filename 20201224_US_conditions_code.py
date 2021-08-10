@@ -82,7 +82,7 @@ def read_data(from_internet=True):
         csvT.columns = ['hh', 'nonfin', 'totPrivate']
         
         # Credit Creation
-        dataC = dataC.subtract(dataC.shift(4)).divide(ngdp.gdp, axis=0)
+        dataC = dataC.subtract(dataC.shift(4)).divide(ngdp.gdp.rolling(4).mean(), axis=0)
         dataC.to_csv('C:/Users/allen/Google Drive/Python Scripts/Repositories/20201222Macro/cc.csv')
         
         # Debt Service Coverage
@@ -101,7 +101,7 @@ def read_data(from_internet=True):
         # Slack us slack
         
         # Data download - trade balance, portfolio flows
-        bop = oecd_bop_pull('USA')
+        bop = oecd_bop_pull('USA').divide(1000).multiply(4)
         bop['gdp'] = util.fred_revised('GDP').resample('Q').max().resample('M').ffill()
         bopP = bop.divide(bop.gdp, axis=0).drop('gdp', axis=1)
         bopP.to_csv('C:/Users/allen/Google Drive/Python Scripts/Repositories/20201222Macro/bop.csv')
